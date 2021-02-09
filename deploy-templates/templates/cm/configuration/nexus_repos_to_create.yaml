@@ -1,0 +1,86 @@
+apiVersion: v1
+data:
+  repos-to-create: |-
+    [
+      {
+        "name": "edp-nexus-maven-group",
+        "repositoryType": "maven-proxy",
+        "blob_store": "edp-maven",
+        "remote_url": "{{ template "nexus.edpMavenRepoUrl" . }}",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "version_policy": "mixed",
+        "write_policy": "allow"
+      },
+      {
+        "name": "confluent.io",
+        "repositoryType": "maven-proxy",
+        "blob_store": "edp-maven",
+        "remote_url": "http://packages.confluent.io/maven/",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "version_policy": "release",
+        "write_policy": "allow"
+      },
+      {
+        "name": "edp-maven-releases",
+        "repositoryType": "maven-hosted",
+        "blob_store": "edp-maven",
+        "version_policy": "release",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "write_policy": "allow"
+      },
+      {
+        "name": "edp-maven-snapshots",
+        "repositoryType": "maven-hosted",
+        "blob_store": "edp-maven",
+        "version_policy": "snapshot",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "write_policy": "allow"
+      },
+      {
+        "name": "edp-maven-proxy",
+        "repositoryType": "maven-proxy",
+        "blob_store": "edp-maven",
+        "remote_url": "https://repo1.maven.org/maven2/",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "version_policy": "mixed",
+        "write_policy": "allow"
+      },
+      {
+        "name": "edp-maven-group",
+        "repositoryType": "maven-group",
+        "blob_store": "edp-maven",
+        "layout_policy": "strict",
+        "strict_content_validation": "true",
+        "version_policy": "mixed",
+        "write_policy": "allow",
+        "member_repos": [
+          "edp-maven-proxy",
+          "edp-maven-releases",
+          "edp-maven-snapshots",
+          "edp-nexus-maven-group",
+          "confluent.io"
+        ]
+      },
+      {
+        "name": "docker-registry",
+        "httpPort": 5001,
+        "httpsPort": null,
+        "repositoryType": "docker-hosted",
+        "blob_store": "docker-registry",
+        "v1Enabled": "true",
+        "strict_content_validation": "true",
+        "write_policy": "allow",
+        "forceBasicAuth": "true"
+      }
+    ]
+kind: ConfigMap
+metadata:
+  labels:
+    app: nexus
+  {{- include "nexus-operator.metaLabels" . | nindent 4 }}
+  name: nexus-repos-to-create

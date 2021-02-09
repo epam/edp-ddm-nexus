@@ -1,0 +1,18 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  annotations:
+    {{ template "admin-routes.whitelist.annotation" . }}
+  name: docker-registry
+spec:
+  host: nexus-docker-hosted-{{ .Release.Namespace }}.{{ .Values.dnsWildcard }}
+  to:
+    kind: Service
+    name: docker-registry
+    weight: 100
+  port:
+    targetPort: docker-hosted-http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

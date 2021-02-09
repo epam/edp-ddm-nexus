@@ -1,0 +1,44 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nexus-operator
+  labels:
+  {{- include "nexus-operator.metaLabels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+    {{- include "nexus-operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "nexus-operator.metaLabels" . | nindent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"      
+    spec:
+      containers:
+        - resources: {}
+          name: nexus-operator
+          command:
+            - nexus-operator
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: nexus-operator
+            - name: PLATFORM_TYPE
+              value: openshift
+          securityContext:
+            allowPrivilegeEscalation: false
+          imagePullPolicy: IfNotPresent
+          image: {{ template "nexus-operator.image" . }}
+      serviceAccountName: {{ .Values.operator.serviceAccountName }}
+      securityContext:
+        runAsNonRoot: true

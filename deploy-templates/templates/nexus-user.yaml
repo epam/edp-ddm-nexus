@@ -1,0 +1,21 @@
+{{- $dot := . }}
+{{- if .Values.global.nexus.administrators -}}
+{{- range .Values.global.nexus.administrators }}
+---
+apiVersion: v2.edp.epam.com/v1alpha1
+kind: NexusUser
+metadata:
+  name: {{ lower (split "@" ( . | replace "\"" "" | replace "_" "-" ))._0 }}
+  labels:
+  {{- include "nexus-operator.metaLabels" $dot | nindent 4 }}
+spec:
+  ownerName: nexus
+  firstName: mock
+  lastName: mock
+  email: {{ . }}
+  userId: {{ . }}
+  roles:
+    - nx-admin
+  status: "active"
+{{- end }}
+{{- end }}

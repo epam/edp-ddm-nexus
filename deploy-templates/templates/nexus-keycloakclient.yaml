@@ -1,0 +1,16 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: nexus
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  clientId: nexus
+  public: true
+  directAccess: false
+  realmRoles:
+    - name: administrator
+  audRequired: true
+  advancedProtocolMappers: false
+  webUrl: {{ template "nexus.url" . }}{{ if .Values.nexus.basePath }}/{{ .Values.nexus.basePath }}{{ end }}
+  targetRealm: {{ template "keycloak.realm" . }}

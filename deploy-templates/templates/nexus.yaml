@@ -1,0 +1,23 @@
+apiVersion: v2.edp.epam.com/v1alpha1
+kind: Nexus
+metadata:
+  name: nexus
+  labels:
+  {{- include "nexus-operator.metaLabels" . | nindent 4 }}
+spec:
+  basePath: {{ .Values.nexus.basePath | default "''" }}
+  edpSpec:
+    dnsWildcard: {{ .Values.dnsWildcard }}
+  image: {{ template "nexus.image.name" . }}
+  version: {{ .Values.nexus.image.version }}
+  keycloakSpec:
+    enabled: {{ .Values.keycloakIntegration.enabled }}
+    realm: {{ template "keycloak.realm" . }}
+    url: {{ template "nexus.url" . }}
+    {{- with .Values.keycloakIntegration.roles }}
+    roles: {{ . | toYaml | nindent 6 }}
+    {{- end }}
+  volumes:
+    - capacity: {{ .Values.nexus.storage.size }}
+      name: data
+      storage_class: {{ template "nexus.storageClass" . }}

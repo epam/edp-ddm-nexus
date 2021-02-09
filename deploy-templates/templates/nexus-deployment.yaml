@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nexus
+    {{- include "nexus-operator.metaLabels" . | nindent 4 }}
+  name: nexus
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nexus
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nexus
+      annotations:
+        backup.velero.io/backup-volumes: nexus-data
+        sidecar.istio.io/inject: "false"        
+    spec:
+      {{- if .Values.nexus.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.nexus.imagePullSecrets }}
+        - {{. -}}
+        {{- end -}}
+      {{ end }}
+      containers:
+        - name: keycloak-proxy
+          image: {{ template "imageRegistry" . -}} keycloak/keycloak-gatekeeper:10.0.0
+          args:
+            - '--base-uri=/{{ .Values.nexus.basePath }}'
+            - '--skip-openid-provider-tls-verify=true'
+            - '--discovery-url=https://{{ .Values.keycloak.host }}/auth/realms/{{ template "keycloak.realm" . }}'
+            - '--client-id=nexus'
+            - '--client-secret=42'
+            - '--listen=0.0.0.0:3000'
+            - '--redirection-url={{ template "nexus.url" . }}'
+            - '--upstream-url=http://127.0.0.1:8081/{{ .Values.nexus.basePath }}'
+            - '--resources=uri=/*|roles={{ .Values.keycloakIntegration.roles | join "," }}|require-any-role=true'
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+        - env:
+          - name: NEXUS_CONTEXT
+            value: "{{ .Values.nexus.basePath }}"
+          image: {{ template "imageRegistry" . -}} {{ .Values.nexus.image.name }}:{{ .Values.nexus.image.version }}
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 180
+            periodSeconds: 20
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
+            timeoutSeconds: 1
+          name: nexus
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
+            timeoutSeconds: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /nexus-data
+              name: nexus-data
+            - mountPath: /opt/sonatype/nexus/etc/nexus-default.properties
+              name: config
+              subPath: nexus-default.properties
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 200
+        runAsUser: 200
+        runAsGroup: 200
+        runAsNonRoot: true
+      serviceAccountName: {{ .Values.nexus.serviceAccountName }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: nexus-data
+          persistentVolumeClaim:
+            claimName: nexus-data
+        - configMap:
+            defaultMode: 420
+            name: nexus-nexus-default.properties
+          name: config
+      {{- with .Values.nexus.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nexus.affinity }}
+      affinity:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nexus.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+  {{- end }}

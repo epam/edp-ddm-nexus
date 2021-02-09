@@ -1,0 +1,54 @@
+name: nexus-operator
+operator:
+  image:
+    name: epamedp/nexus-operator
+    version: 2.11.0-MDTU-DDM-SNAPSHOT.3
+  serviceAccountName: nexus-operator
+  clusterRoleName: nexus-operator-clusterrole
+
+global:
+  nexus: {}
+#  nexus:
+#    readers:
+#      - regularuser1@epam.com
+#      - regularuser2@epam.com
+#    administrators:
+#      - adminuser1@epam.com
+#      - adminuser2@epam.com
+
+
+nexus:
+  image:
+    name: sonatype/nexus3
+    version: 3.30.0
+  storage:
+    size: 50Gi
+    class: gp2
+  basePath: 'nexus'
+  serviceAccountName: nexus
+  resources:
+    limits:
+      memory: 3Gi
+    requests:
+      cpu: 100m
+      memory: 1.5Gi
+
+keycloakIntegration:
+  enabled: true
+  realm: admin
+  roles:
+    - nexus-admin
+    - nexus-user
+
+# Test values (actually are passed via deploy pipeline)
+keycloak:
+  host: keycloak.edp-epam.com
+image:
+  version: 1.1.1-1
+dnsWildcard: mdtu-ddm.edp.epam.com
+edpProject: mdtu-ddm-edp-cicd
+namespace: ns
+cdPipelineName: pipe
+cdPipelineStageName: dev
+dockerhub_username: mock
+dockerhub_password: mock
