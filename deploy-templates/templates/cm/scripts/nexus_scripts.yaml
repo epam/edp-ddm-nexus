@@ -88,9 +88,21 @@ data:
     import groovy.json.JsonSlurper
     import org.sonatype.nexus.repository.config.Configuration
     import org.sonatype.nexus.repository.config.WritePolicy
+    import org.sonatype.nexus.cleanup.storage.CleanupPolicyStorage
 
     parsed_args = new JsonSlurper().parseText(args)
-
+    try {
+        def policyStorage = container.lookup(CleanupPolicyStorage.class.getName())
+        def cleanupPolicy = policyStorage.newCleanupPolicy()
+        cleanupPolicy.setName(parsed_args.cleanup_policy_name)
+        cleanupPolicy.setNotes('')
+        cleanupPolicy.setMode('deletion')
+        cleanupPolicy.setFormat('maven2')
+        cleanupPolicy.setCriteria(['regex': '.*'])
+        policyStorage.add(cleanupPolicy)
+    } catch (e) {
+        log.info("Cleanup policy already exists, skipping...")
+    }
     configuration = repository.createHosted(parsed_args.name,
                        'maven2-hosted',
                        parsed_args.blob_store,
@@ -111,14 +123,17 @@ data:
             ])
 
     def existingRepository = repository.getRepositoryManager().get(parsed_args.name)
+    def cleanupPolicyAttribute = [policyName: [parsed_args.cleanup_policy_name].toSet()]
 
     if (existingRepository != null) {
         existingRepository.stop()
         configuration.attributes['storage']['blobStoreName'] = existingRepository.configuration.attributes['storage']['blobStoreName']
         configuration.entityMetadata=existingRepository.configuration.entityMetadata
+        configuration.getAttributes().put("cleanup", cleanupPolicyAttribute)
         existingRepository.update(configuration)
         existingRepository.start()
     } else {
+        configuration.getAttributes().put("cleanup", cleanupPolicyAttribute)
         repository.getRepositoryManager().create(configuration)
     }
 
@@ -200,8 +215,21 @@ data:
     import org.sonatype.nexus.repository.config.WritePolicy
     import groovy.json.JsonSlurper
     import org.sonatype.nexus.repository.config.Configuration
+    import org.sonatype.nexus.cleanup.storage.CleanupPolicyStorage
 
     parsed_args = new JsonSlurper().parseText(args)
+    try {
+        def policyStorage = container.lookup(CleanupPolicyStorage.class.getName())
+        def cleanupPolicy = policyStorage.newCleanupPolicy()
+        cleanupPolicy.setName(parsed_args.cleanup_policy_name)
+        cleanupPolicy.setNotes('')
+        cleanupPolicy.setMode('deletion')
+        cleanupPolicy.setFormat('docker')
+        cleanupPolicy.setCriteria(['regex': 'v2/.*'])
+        policyStorage.add(cleanupPolicy)
+    } catch (e) {
+        log.info("Cleanup policy already exists, skipping...")
+    }
 
     configuration = repository.createHosted(parsed_args.name, parsed_args.repositoryType)
 
@@ -219,14 +247,17 @@ data:
                               ])
 
     def existingRepository = repository.getRepositoryManager().get(parsed_args.name)
+    def cleanupPolicyAttribute = [policyName: [parsed_args.cleanup_policy_name].toSet()]
 
     if (existingRepository != null) {
         existingRepository.stop()
         configuration.attributes['storage']['blobStoreName'] = existingRepository.configuration.attributes['storage']['blobStoreName']
         configuration.entityMetadata=existingRepository.configuration.entityMetadata
+        configuration.getAttributes().put("cleanup", cleanupPolicyAttribute)
         existingRepository.update(configuration)
         existingRepository.start()
     } else {
+        configuration.getAttributes().put("cleanup", cleanupPolicyAttribute)
         repository.getRepositoryManager().create(configuration)
     }
   create-repo-docker-proxy.groovy: |

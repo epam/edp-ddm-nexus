@@ -1,0 +1,5 @@
+{
+    "name": "update-cleanup-task",
+    "type": "groovy",
+    "content": "import org.sonatype.nexus.scheduling.TaskConfiguration; import org.sonatype.nexus.scheduling.TaskInfo; import org.sonatype.nexus.scheduling.TaskScheduler; import org.sonatype.nexus.scheduling.schedule.Schedule; TaskScheduler taskScheduler = container.lookup(TaskScheduler.class.getName()); TaskInfo existingTask = taskScheduler.getTaskByTypeId('repository.cleanup'); TaskConfiguration taskConfiguration = taskScheduler.createTaskConfigurationInstance('repository.cleanup'); taskConfiguration.setName('Cleanup service'); taskConfiguration.setId(existingTask.id); Schedule schedule = taskScheduler.scheduleFactory.manual(); taskScheduler.scheduleTask(taskConfiguration, schedule); "
+}

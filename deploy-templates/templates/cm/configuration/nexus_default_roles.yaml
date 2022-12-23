@@ -12,6 +12,7 @@ data:
           "nx-repository-view-*-*-browse",
           "nx-repository-view-*-*-add",
           "nx-repository-view-*-*-edit",
+          "nx-tasks-all",
           "nx-apikey-all",
           "nx-script-*-add",
           "nx-script-*-delete",

@@ -27,6 +27,7 @@ data:
         "repositoryType": "maven-hosted",
         "blob_store": "edp-maven",
         "version_policy": "release",
+        "cleanup_policy_name": "maven-cleanup-policy",
         "layout_policy": "strict",
         "strict_content_validation": "true",
         "write_policy": "allow"
@@ -72,6 +73,7 @@ data:
         "httpsPort": null,
         "repositoryType": "docker-hosted",
         "blob_store": "docker-registry",
+        "cleanup_policy_name": "docker-cleanup-policy",
         "v1Enabled": "true",
         "strict_content_validation": "true",
         "write_policy": "allow",
