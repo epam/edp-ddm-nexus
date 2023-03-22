@@ -18,9 +18,10 @@ spec:
     metadata:
       labels:
         app: nexus
+        collect.logs: "plain-text"
       annotations:
         backup.velero.io/backup-volumes: nexus-data
-        sidecar.istio.io/inject: "false"        
+        sidecar.istio.io/inject: "false"
     spec:
       {{- if .Values.nexus.imagePullSecrets }}
       imagePullSecrets:
