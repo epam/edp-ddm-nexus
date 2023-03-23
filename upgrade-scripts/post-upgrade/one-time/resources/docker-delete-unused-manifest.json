@@ -1,0 +1,5 @@
+{
+  "name": "docker-delete-unused-manifest-and-tags",
+  "type": "groovy",
+  "content": "import org.sonatype.nexus.scheduling.TaskConfiguration; import org.sonatype.nexus.scheduling.TaskInfo; import org.sonatype.nexus.scheduling.TaskScheduler; import org.sonatype.nexus.scheduling.schedule.Schedule; TaskScheduler taskScheduler = container.lookup(TaskScheduler.class.getName()); TaskConfiguration taskConfiguration = taskScheduler.createTaskConfigurationInstance('repository.docker.gc'); taskConfiguration.setName('docker-delete-unused-manifest-and-tags'); taskConfiguration.setString(\"repositoryName\", \"docker-registry\"); Schedule schedule = taskScheduler.scheduleFactory.manual(); taskScheduler.scheduleTask(taskConfiguration, schedule); "
+}

@@ -1,0 +1,5 @@
+{
+  "name": "compact-blobstore-docker-registry",
+  "type": "groovy",
+  "content": "import org.sonatype.nexus.scheduling.TaskConfiguration; import org.sonatype.nexus.scheduling.TaskInfo; import org.sonatype.nexus.scheduling.TaskScheduler; import org.sonatype.nexus.scheduling.schedule.Schedule; TaskScheduler taskScheduler = container.lookup(TaskScheduler.class.getName()); TaskConfiguration taskConfiguration = taskScheduler.createTaskConfigurationInstance('blobstore.compact'); taskConfiguration.setName('compact-blobstore-docker-registry'); taskConfiguration.setString(\"blobstoreName\", \"docker-registry\"); Schedule schedule = taskScheduler.scheduleFactory.manual();  taskScheduler.scheduleTask(taskConfiguration, schedule);"
+}

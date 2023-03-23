@@ -6,12 +6,9 @@ void call() {
             "-n ${NAMESPACE} | base64 --decode", returnStdout: true)
     String NEXUS_PATH = sh(script: "oc get route nexus -o jsonpath={.spec.path} -n $NAMESPACE", returnStdout: true).replaceAll("/\\z", "")
     String NEXUS_URL = "http://nexus.${NAMESPACE}.svc:8081$NEXUS_PATH"
-    def scriptsDelete =[ 'create-repo-docker-hosted','create-repo-maven-hosted']
-    def scriptsRun = ['update-cleanup-task':'resources/updateExistinCleanUp.json']
-    scriptsDelete.each { name ->
-        // Delete script
-        sh "curl -u ${NEXUS_ADMIN_USERNAME}:${NEXUS_ADMIN_PASSWORD} --header 'Content-Type: application/json' -X DELETE \"${NEXUS_URL}/service/rest/v1/script/${name}\""
-    }
+    def scriptsRun = ['compact-blobstore-docker-registry':'resources/compact-blobstore-docker-registry.json',
+                      'compact-blobstore-edp-maven':'resources/compact-blobstore-edp-maven.json',
+                      'docker-delete-unused-manifest-and-tags':'resources/docker-delete-unused-manifest.json']
     scriptsRun.each { key, value ->
         // Put script
         sh "curl -u ${NEXUS_ADMIN_USERNAME}:${NEXUS_ADMIN_PASSWORD} --header 'Content-Type: application/json' -X POST \"${NEXUS_URL}/service/rest/v1/script/\"" +
