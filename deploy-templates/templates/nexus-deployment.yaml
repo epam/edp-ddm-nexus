@@ -41,7 +41,7 @@ spec:
             - '--listen=0.0.0.0:3000'
             - '--redirection-url={{ template "nexus.url" . }}'
             - '--upstream-url=http://127.0.0.1:8081/{{ .Values.nexus.basePath }}'
-            - '--resources=uri=/*|roles={{ .Values.keycloakIntegration.roles | join "," }}|require-any-role=true'
+            - '--resources=uri=/*|roles=cp-registry-admin-{{ .Release.Namespace }}|require-any-role=true'
           ports:
             - containerPort: 3000
               protocol: TCP

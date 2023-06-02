@@ -14,9 +14,8 @@ spec:
     enabled: {{ .Values.keycloakIntegration.enabled }}
     realm: {{ template "keycloak.realm" . }}
     url: {{ template "nexus.url" . }}
-    {{- with .Values.keycloakIntegration.roles }}
-    roles: {{ . | toYaml | nindent 6 }}
-    {{- end }}
+    roles:
+      - cp-registry-admin-{{ .Release.Namespace }}
   volumes:
     - capacity: {{ .Values.nexus.storage.size }}
       name: data

@@ -40,9 +40,6 @@ nexus:
 keycloakIntegration:
   enabled: true
   realm: admin
-  roles:
-    - nexus-admin
-    - nexus-user
 
 # Test values (actually are passed via deploy pipeline)
 keycloak:

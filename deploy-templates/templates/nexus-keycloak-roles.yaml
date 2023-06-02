@@ -7,10 +7,8 @@ metadata:
 spec:
   realm: {{ .Values.keycloakIntegration.realm }}
   roles:
-  {{- range .Values.keycloakIntegration.roles }}
     - attributes: null
       composite: false
       composites: null
-      description: {{ . }}
-      name: {{ . }}
-  {{- end }}
+      description: cp-registry-admin-{{ .Release.Namespace }}
+      name: cp-registry-admin-{{ .Release.Namespace }}
