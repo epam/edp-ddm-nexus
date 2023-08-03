@@ -1,4 +1,4 @@
-apiVersion: v1.edp.epam.com/v1alpha1
+apiVersion: v1.edp.epam.com/v1
 kind: KeycloakClient
 metadata:
   name: nexus
@@ -11,6 +11,14 @@ spec:
   realmRoles:
     - name: administrator
   audRequired: true
+  protocolMappers:
+    - config:
+        access.token.claim: 'true'
+        id.token.claim: 'false'
+        included.client.audience: nexus
+      name: aud
+      protocol: openid-connect
+      protocolMapper: oidc-audience-mapper
   advancedProtocolMappers: false
   webUrl: {{ template "nexus.url" . }}{{ if .Values.nexus.basePath }}/{{ .Values.nexus.basePath }}{{ end }}
   targetRealm: {{ template "keycloak.realm" . }}
