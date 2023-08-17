@@ -4,7 +4,7 @@ metadata:
   annotations:
     control-plane-console/description: {{ .Values.edpComponent.description }}
     control-plane-console/display-name: {{ .Values.edpComponent.displayName }}
-    control-plane-console/display-order: '7'
+    control-plane-console/display-order: '9'
     control-plane-console/operational-zone: {{ .Values.edpComponent.operationalZone }}
   name: nexus
   labels:
