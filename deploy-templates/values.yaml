@@ -17,7 +17,7 @@ global:
 #      - adminuser2@epam.com
 
 edpComponent:
-  description: "Збереження згенерованих в реєстрі артефактів"
+  description: "Збереження згенерованих в реєстрі артефактів."
   displayName: "Сховище артефактів реєстру (Nexus)"
   operationalZone: "registry-administration-zone"
 
