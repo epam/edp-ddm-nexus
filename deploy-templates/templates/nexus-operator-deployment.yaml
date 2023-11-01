@@ -13,8 +13,6 @@ spec:
       labels:
         collect.logs: "plain-text"
       {{- include "nexus-operator.metaLabels" . | nindent 8 }}
-      annotations:
-        sidecar.istio.io/inject: "false"
     spec:
       containers:
         - resources: {}

@@ -1,3 +1,14 @@
+global:
+  container:
+    requestsLimitsEnabled: true
+  nexus: {}
+  registry:
+    nexus:
+      container:
+        resources:
+          requests: {}
+          limits: {}
+
 name: nexus-operator
 operator:
   image:
@@ -5,16 +16,6 @@ operator:
     version: 2.11.0-MDTU-DDM-SNAPSHOT.3
   serviceAccountName: nexus-operator
   clusterRoleName: nexus-operator-clusterrole
-
-global:
-  nexus: {}
-#  nexus:
-#    readers:
-#      - regularuser1@epam.com
-#      - regularuser2@epam.com
-#    administrators:
-#      - adminuser1@epam.com
-#      - adminuser2@epam.com
 
 edpComponent:
   description: "Збереження згенерованих в реєстрі артефактів."

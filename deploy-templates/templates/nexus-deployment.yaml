@@ -21,7 +21,6 @@ spec:
         collect.logs: "plain-text"
       annotations:
         backup.velero.io/backup-volumes: nexus-data
-        sidecar.istio.io/inject: "false"
     spec:
       {{- if .Values.nexus.imagePullSecrets }}
       imagePullSecrets:
@@ -63,6 +62,10 @@ spec:
               port: 8081
             timeoutSeconds: 1
           name: nexus
+          {{- if .Values.global.container.requestsLimitsEnabled }}
+          resources:
+            {{- toYaml .Values.global.registry.nexus.container.resources | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: 8081
               protocol: TCP
